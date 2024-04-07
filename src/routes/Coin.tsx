@@ -26,16 +26,41 @@ function Coin() {
   const [loading, setLoading] = useState(true);
   const { coinId } = useParams<RouteParams>();
   const { state } = useLocation<RouteState>();
+  const [info, setInfo] = useState({});
+  const [price, setPrice] = useState({});
   interface RouteState {
     name: string;
   }
+  interface InfoData {
+    name: string;
+  }
+  interface PriceData {
+    name: string;
+  }
+  useEffect(() => {
+    (async () => {
+      const infoData = await (
+        await fetch(`https://api.coinpaprika.com/v1/coins/${coinId.slice(1)}`)
+      ).json();
+      const priceData = await (
+        await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId.slice(1)}`)
+      ).json();
+      console.log(coinId.slice(1));
+
+      setInfo(infoData);
+      setPrice(priceData);
+      console.log("infoData : " + JSON.stringify(infoData));
+      console.log("priceData : " + JSON.stringify(priceData));
+    })();
+  }, []);
+
   return (
     <Container>
       <Header>
         <Title>{state?.name || <Loader>Loading....💦</Loader>}</Title>
       </Header>
 
-      {loading ? <Loader>Loading....💦</Loader> : null}
+      {loading ? <Loader>Loading....💦</Loader> : <span>{info.hello}</span>}
     </Container>
   );
 }
